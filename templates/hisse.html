@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hisse Detayları</title>
+    <style>
+        /* Gerekli CSS stilleri */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .hisse-detay {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .hisse-detay h2 {
+            margin-top: 0;
+        }
+        .hisse-detay p {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hisse-detay">
+            <h2>Hisse Detayları</h2>
+            <p><strong>Şirket Adı:</strong> <span id="sirketAdi"></span></p>
+            <p><strong>Kod:</strong> <span id="hisseKod"></span></p>
+            <p><strong>Fiyat (TL):</strong> <span id="fiyat"></span></p>
+            <p><strong>Hacim (TL):</strong> <span id="hacim"></span></p>
+        </div>
+    </div>
+
+    <script>
+        // URL'den hisseKod parametresini al
+        const urlParams = new URLSearchParams(window.location.search);
+        const hisseKod = urlParams.get('hisseKod');
+
+        // Hisse detaylarını almak için fetch isteği yap
+        async function fetchHisseDetay() {
+            try {
+                const response = await fetch(`/hisseler/${encodeURIComponent(hisseKod)}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    // Hisse detaylarını HTML'e ekle
+                    document.getElementById('sirketAdi').innerText = data.ad;
+                    document.getElementById('hisseKod').innerText = data.kod;
+                    document.getElementById('fiyat').innerText = data.fiyat;
+                    document.getElementById('hacim').innerText = data.hacim;
+                } else {
+                    throw new Error('Hisse detayları alınamadı.');
+                }
+            } catch (error) {
+                console.error('Hisse detayları alınırken bir hata oluştu:', error);
+            }
+        }
+
+        // Sayfa yüklendiğinde hisse detaylarını getir
+        document.addEventListener("DOMContentLoaded", function() {
+            fetchHisseDetay();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hisseler</title>
+    <link href="{{url_for("static",path="/css/app.css")}}" rel="stylesheet"/>
+    <link href="{{url_for("static",path="/css/navbar.css")}}" rel="stylesheet">
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+        .hisseler-container {
+            height: 500px; /* Adjust the height as needed */
+            overflow-y: auto;
+        }
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .success-message {
+            color: green;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto py-10">
+        {% include "navbar.html" %}
+        <h1 class="text-3xl font-bold text-center">Hisseler</h1>
+        <div class="hisseler-container mt-10">
+            <table class="table-auto mx-auto">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2 border">Şirket Adı</th>
+                        <th class="px-4 py-2 border">Kod</th>
+                        <th class="px-4 py-2 border">Fiyat (TL)</th>
+                        <th class="px-4 py-2 border">Hacim (TL)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for hisse in veriler %}
+                    <tr>
+                        <td class="border px-4 py-2"><a href="#" class="hisse-link" data-hisse-kod="{{ hisse.kod }}">{{ hisse.ad }}</a></td>
+                        <td class="border px-4 py-2">{{ hisse.kod }}</td>
+                        <td class="border px-4 py-2">{{ hisse.fiyat }}</td>
+                        <td class="border px-4 py-2">{{ hisse.hacim }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="button-container">
+            <button onclick="hisseleriGuncelle()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Hisseleri Güncelle</button>
+        </div>
+        <div id="successMessage" class="success-message" style="display: none; background-color: #d1f5d3; border-color: #4caf50; color: #4caf50; padding: 10px; border-radius: 5px; margin-top: 20px;">Hisseler güncellendi!</div>
+
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var hisseLinks = document.querySelectorAll('.hisse-link');
+            hisseLinks.forEach(function(link) {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault(); // Prevent the default link behavior
+                    var hisseKod = this.getAttribute('data-hisse-kod');
+                    fetchHisseVerileri(hisseKod);
+                });
+            });
+        });
+    
+        async function fetchHisseVerileri(hisseKod) {
+            try {
+                const response = await fetch(`/hisseler/${encodeURIComponent(hisseKod)}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    // Redirect to the hisse.html page with the data
+                    window.location.href = `/hisseler/hisse/${encodeURIComponent(hisseKod)}`;
+                } else {
+                    throw new Error('Hisse verileri alınırken bir hata oluştu.');
+                }
+            } catch (error) {
+                console.error('Hisse verileri alınırken bir hata oluştu:', error);
+                alert('Hisse verileri alınırken bir hata oluştu.');
+            }
+        }
+    </script>
+    
+</body>
+</html>
